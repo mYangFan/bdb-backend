@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Http\Library\JWT;
-use App\Http\Library\JwtAuth;
 use Illuminate\Console\Command;
 
 class Test extends Command
@@ -39,7 +38,6 @@ class Test extends Command
      */
     public function handle()
     {
-        $re = JwtAuth::verifyJwt("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOjEsInVzZXJOYW1lIjoieWYifQ.qJH-PfZgLEOQ3AhPyBtT09dL7OxDN5nXUU1A0dHn3oE");
-        dd($re);
+
     }
 }

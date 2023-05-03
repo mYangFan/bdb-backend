@@ -18,9 +18,14 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('/login', [\App\Http\Controllers\Admin\LoginController::class, 'index']);
+Route::post('login', [\App\Http\Controllers\Api\LoginController::class, 'index']);
 
-Route::middleware('jwt.auth')->group(function () {
-    Route::get('/users', [\App\Http\Controllers\Admin\UsersController::class, 'index']);
+Route::middleware('jwt.api.auth')->group(function () {
+    Route::post('finishGuide', [\App\Http\Controllers\Api\FinishGuideController::class, 'index']);
+    Route::post('startLevel', [\App\Http\Controllers\Api\GameStartController::class, 'index']);
+    Route::post('endLevel', [\App\Http\Controllers\Api\GameOverController::class, 'index']);
+    Route::post('addItem', [\App\Http\Controllers\Api\AddItemController::class, 'index']);
+    Route::post('getReward', [\App\Http\Controllers\Api\GetRewardController::class, 'index']);
 });
+
 
