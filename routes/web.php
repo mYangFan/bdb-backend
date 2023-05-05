@@ -17,8 +17,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::post('/login', [\App\Http\Controllers\Admin\LoginController::class, 'index']);
+Route::post('login', [\App\Http\Controllers\Admin\LoginController::class, 'index']);
 
 Route::middleware('jwt.auth')->group(function () {
     Route::get('/users', [\App\Http\Controllers\Admin\UsersController::class, 'index']);
+    Route::get('loginInfo', [\App\Http\Controllers\Admin\InfoController::class, 'index']);
 });

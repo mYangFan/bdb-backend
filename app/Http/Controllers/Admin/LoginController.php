@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Library\JwtAuth;
-use App\Models\AdminUser;
+use App\Models\Admin\AdminUser;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 
 class LoginController extends Controller
@@ -29,7 +31,9 @@ class LoginController extends Controller
 
         try {
             Redis::setex("token:" . $user->id, 3600, $token);
+            $user->update(['last_login_at' => Carbon::now()->format('Y-m-d H:i:s')]);
         } catch (\Exception $e) {
+            Log::error("redis error: " . $e->getMessage());
             return ['code' => 0, 'msg' => '服务器开小差去了。。。', 'data' => null];
         }
 

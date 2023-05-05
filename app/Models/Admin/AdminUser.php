@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Admin;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\DB;
 
 class AdminUser extends Model
 {
@@ -29,13 +30,20 @@ class AdminUser extends Model
 
     public static function getAllUsers()
     {
-        $users = self::query()->select(["id, username, "]);
+        return DB::table("admin_users as u")
+            ->leftJoin("admin_role_users as ru", "u.id", "=", "ru.user_id")
+            ->leftJoin("admin_roles as r", "ru.role_id", "=", "r.id")
+            ->select(['u.id', 'u.username', 'u.name', 'u.tel', 'u.last_login_at', 'u.state', 'r.name as roleName'])
+            ->get();
+    }
 
-        return $users;
+    public static function getUser($userId)
+    {
+        return self::query()->where("id", $userId)->first();
     }
 
     public function roles()
     {
-        
+
     }
 }
