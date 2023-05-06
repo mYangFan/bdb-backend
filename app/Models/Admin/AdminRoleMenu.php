@@ -10,6 +10,8 @@ class AdminRoleMenu extends Model
 {
     use HasFactory;
 
+    protected $table = "admin_role_menu";
+
     public static function getRoleMenus($roleId)
     {
         return DB::table("admin_role_menu as rm")

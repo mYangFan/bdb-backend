@@ -28,12 +28,15 @@ class AdminUser extends Model
     }
 
 
-    public static function getAllUsers()
+    public static function getAllUsers($search = '')
     {
         return DB::table("admin_users as u")
             ->leftJoin("admin_role_users as ru", "u.id", "=", "ru.user_id")
             ->leftJoin("admin_roles as r", "ru.role_id", "=", "r.id")
             ->select(['u.id', 'u.username', 'u.name', 'u.tel', 'u.last_login_at', 'u.state', 'r.name as roleName'])
+            ->when($search, function ($query) use ($search) {
+                $query->where('u.username', 'like', '%' . $search . '%');
+            })
             ->get();
     }
 

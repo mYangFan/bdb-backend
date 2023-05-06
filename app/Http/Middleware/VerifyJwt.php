@@ -37,7 +37,7 @@ class VerifyJwt
             $request->merge(["userId" => $authData]);
             Redis::setex("token:" . $authData, 3600, $token);
         } else {
-            return Response::json(['code' => 401, 'msg' => 'token has been expired', 'data' => null]);
+            return Response::json(['code' => 419, 'msg' => 'token has been expired', 'data' => null]);
         }
 
         return $next($request);
