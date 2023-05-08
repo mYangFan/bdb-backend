@@ -11,6 +11,8 @@ class AdminUser extends Model
 {
     use HasFactory;
 
+    protected $guarded = [];
+
     /**
      * 校验用户名密码
      * @param $username
@@ -43,6 +45,11 @@ class AdminUser extends Model
     public static function getUser($userId)
     {
         return self::query()->where("id", $userId)->first();
+    }
+
+    public static function deleteUser($userId)
+    {
+        return self::query()->where("id", $userId)->delete();
     }
 
     public function roles()

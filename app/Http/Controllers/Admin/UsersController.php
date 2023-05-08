@@ -17,7 +17,7 @@ class UsersController
         $search = $request->input("search");
         $users = AdminUser::getAllUsers($search);
 
-        return ['code' => 0, 'msg' => '', "data" => $users];
+        return ['code' => 1, 'msg' => 'SUCCESS', "data" => convert2Camel($users)];
     }
 
     public function createUser(Request $request)
@@ -114,5 +114,16 @@ class UsersController
 
         return ['code' => 1, 'msg' => 'SUCCESS', 'data' => null];
 
+    }
+
+    public function deleteUser(Request $request, $id)
+    {
+        $result = AdminUser::deleteUser($id);
+
+        if (!$result) {
+            return ['code' => 0, 'msg' => '删除用户失败', 'data' => null];
+        }
+
+        return ['code' => 1, 'msg' => 'SUCCESS', 'data' => null];
     }
 }

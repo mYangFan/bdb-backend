@@ -5,14 +5,16 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Admin\AdminRole;
 use App\Models\Admin\AdminRoleMenu;
+use App\Models\Admin\AdminRoleUser;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class RolesController extends Controller
 {
     public function index()
     {
-        $roles = AdminRole::all();
+        $roles = AdminRole::getRoles();
 
         return ['code' => 1, 'msg' => 'SUCCESS', 'data' => convert2Camel($roles)];
     }
@@ -37,6 +39,29 @@ class RolesController extends Controller
         }
 
         AdminRoleMenu::query()->insert($roleMenus);
+
+        return ['code' => 1, 'msg' => 'SUCCESS', 'data' => null];
+    }
+
+    public function deleteRole($id)
+    {
+        $role = AdminRole::query()->where("id", $id)->first();
+        if ($id->name == "超级管理员") {
+            return ['code' => 0, 'msg' => '超级管理员禁止删除', 'data' => null];
+        }
+
+        $roleUser = AdminRoleUser::query()->where(['role_id' => $id])->first();
+        if (!empty($roleUser)) {
+            return ['code' => 0, 'msg' => '该角色已存在用户，请先解除所有与改角色的用户绑定关系', 'data' => null];
+        }
+
+        try {
+            AdminRoleMenu::query()->where("role_id", $id)->delete();
+            AdminRole::query()->where("id", $id)->delete();
+        } catch (\Exception $e) {
+            Log::error("删除角色失败" . $e->getMessage());
+            return ['code' => 0, 'msg' => '删除角色失败', 'data' => null];
+        }
 
         return ['code' => 1, 'msg' => 'SUCCESS', 'data' => null];
     }

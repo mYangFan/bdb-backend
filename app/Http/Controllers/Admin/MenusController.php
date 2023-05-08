@@ -10,7 +10,7 @@ class MenusController extends Controller
 {
     public function menuTree(Request $request)
     {
-        $roleId = $request->query("roleId");
-        dd(AdminMenu::getMenuTree());
+        $roleId = $request->input("roleId");
+        dd(AdminMenu::getMenuTree($roleId));
     }
 }

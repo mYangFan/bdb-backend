@@ -45,4 +45,16 @@ class LoginController extends Controller
                 'token' => $token
             ]];
     }
+
+    public function logout(Request $request)
+    {
+        $userId = $request->input("userId");
+        $result = Redis::del("token:" . $userId);
+
+        if (!$result) {
+            return ['code' => 0, 'msg' => '退出登录失败', 'data' => null];
+        }
+
+        return ['code' => 1, 'msg' => '退出登录成功，即将跳转至登录页', 'data' => null];
+    }
 }
