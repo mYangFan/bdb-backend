@@ -12,9 +12,9 @@ use Illuminate\Support\Facades\Log;
 
 class RolesController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $roles = AdminRole::getRoles();
+        $roles = AdminRole::getRoles($request);
 
         return ['code' => 1, 'msg' => 'SUCCESS', 'data' => convert2Camel($roles)];
     }
