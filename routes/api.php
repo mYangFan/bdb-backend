@@ -21,6 +21,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('login', [\App\Http\Controllers\Api\LoginController::class, 'index']);
 
 Route::middleware('jwt.api.auth')->group(function () {
+    Route::post('authUser', [\App\Http\Controllers\Api\LoginController::class, 'authUser']);
     Route::post('finishGuide', [\App\Http\Controllers\Api\FinishGuideController::class, 'index']);
     Route::post('startLevel', [\App\Http\Controllers\Api\GameStartController::class, 'index']);
     Route::post('endLevel', [\App\Http\Controllers\Api\GameOverController::class, 'index']);

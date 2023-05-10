@@ -18,7 +18,7 @@ class AddItemController extends Controller
         if (empty($result)) {
             return [
                 "code" => 1,
-                "msg"  => "update failed",
+                "msg" => "道具领取失败",
                 "data" => null
             ];
         }

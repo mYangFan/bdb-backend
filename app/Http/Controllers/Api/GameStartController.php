@@ -17,8 +17,8 @@ class GameStartController extends Controller
         $level = $request->input("level");
         $user = User::query()->where("id", $userId)->first();
 
-        if ($level > $user->max_level) {
-            return ['code' => 1, 'msg' => 'level error', 'data' => null];
+        if ($level > $user->max_level + 1) {
+            return ['code' => 1, 'msg' => '关卡数异常', 'data' => null];
         }
 
         $backpack = UserBackpack::getBackpackByUser($userId);
@@ -26,11 +26,11 @@ class GameStartController extends Controller
 
         $returnData = [
             'backpack' => $backpack,
-            'reward'   => $rewards,
-            'battle'   => [
+            'reward' => $rewards,
+            'battle' => [
                 'lastMaxLevel' => $user->max_level,
                 'currentLevel' => $level,
-                'canGetGift'   => 1
+                'canGetGift' => 1
             ]
         ];
 
@@ -42,14 +42,14 @@ class GameStartController extends Controller
 
             //24小时内只能领一次
             if ($nowDate < $gapRewardDate) {
-                $returnData['battle']['canGetGift'] = 0;
-                return ['code' => -10021, 'msg' => '用户24小时内已经领取过奖励了', 'data' => convert2Camel($returnData)];
+                $returnData['battle']['canGetGift'] = -10021;
+//                return ['code' => -10021, 'msg' => '用户24小时内已经领取过奖励了', 'data' => convert2Camel($returnData)];
             }
 
             //一年内只能领7次
             if ($nowDate < $rewardYearDate && count($rewards) >= 7) {
-                $returnData['battle']['canGetGift'] = 0;
-                return ['code' => -10024, 'msg' => '用户一年内领取奖励次数已达上限', 'data' => convert2Camel($returnData)];
+                $returnData['battle']['canGetGift'] = -10024;
+//                return ['code' => -10024, 'msg' => '用户一年内领取奖励次数已达上限', 'data' => convert2Camel($returnData)];
             }
         }
 

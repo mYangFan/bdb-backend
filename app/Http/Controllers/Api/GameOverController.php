@@ -25,8 +25,8 @@ class GameOverController extends Controller
 
         $returnData = [
             'backpack' => $backpack,
-            'reward'   => $rewards,
-            'battle'   => [
+            'reward' => $rewards,
+            'battle' => [
                 'lastMaxLevel' => $user->max_level,
                 'currentLevel' => $level,
             ]
