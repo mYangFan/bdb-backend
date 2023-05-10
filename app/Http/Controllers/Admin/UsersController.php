@@ -14,8 +14,8 @@ class UsersController
 
     public function index(Request $request)
     {
-        $search = $request->input("search");
-        $users = AdminUser::getAllUsers($search);
+
+        $users = AdminUser::getAllUsers($request);
 
         return ['code' => 1, 'msg' => 'SUCCESS', "data" => convert2Camel($users)];
     }
@@ -43,13 +43,15 @@ class UsersController
             $user->created_at = $now;
             $user->updated_at = $now;
 
+            $user->save();
+
             AdminRoleUser::query()->insert(['user_id' => $user->id, "role_id" => $roleId, 'created_at' => $now, 'updated_at' => $now]);
         } catch (\Exception $e) {
             Log::error("添加后台账户出错： " . $e->getMessage());
             return ['code' => 0, 'msg' => '添加用户失败，请稍后重试', 'data' => null];
         }
 
-        return ['code' => 0, 'msg' => 'SUCCESS', 'data' => null];
+        return ['code' => 1, 'msg' => 'SUCCESS', 'data' => null];
     }
 
     public function updateUser(Request $request)
