@@ -54,9 +54,8 @@ class UsersController
         return ['code' => 1, 'msg' => 'SUCCESS', 'data' => null];
     }
 
-    public function updateUser(Request $request)
+    public function updateUser(Request $request, $userId)
     {
-        $userId = $request->input("userId");
         $roleId = $request->input("roleId");
         $tel = $request->input("tel");
         $name = $request->input("name");
@@ -105,10 +104,17 @@ class UsersController
     public function modifyPassword(Request $request)
     {
         $userId = $request->input("userId");
+        $oldPassword = $request->input("oldPassword");
         $password = $request->input("password");
 
+        $user = AdminUser::query()->where('id', $userId)->where('password', md5($oldPassword))->first();
+
+        if (empty($user)) {
+            return ['code' => 0, 'msg' => '密码不正确', 'data' => null];
+        }
+
         try {
-            AdminUser::query()->where(['id' => $userId])->update(['password' => md5($password)]);
+            $user->update(['password' => md5($password)]);
         } catch (\Exception $e) {
             Log::info("修改后台用户密码失败： " . $e->getMessage());
             return ['code' => 0, 'msg' => '修改密码失败', 'data' => null];

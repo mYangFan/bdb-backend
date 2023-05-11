@@ -25,8 +25,8 @@ Route::middleware('jwt.auth')->group(function () {
 
     Route::get('users', [\App\Http\Controllers\Admin\UsersController::class, 'index']);
     Route::post('addUser', [\App\Http\Controllers\Admin\UsersController::class, 'createUser']);
-    Route::post('updateUser', [\App\Http\Controllers\Admin\UsersController::class, 'updateUser']);
-    Route::delete('deleteUser/{id}', [\App\Http\Controllers\Admin\UsersController::class, 'deleteUser']);
+    Route::post('updateUser/{id}', [\App\Http\Controllers\Admin\UsersController::class, 'updateUser']);
+    Route::post('deleteUser/{id}', [\App\Http\Controllers\Admin\UsersController::class, 'deleteUser']);
     Route::post('modifyPassword', [\App\Http\Controllers\Admin\UsersController::class, 'modifyPassword']);
 
     Route::get('roles', [\App\Http\Controllers\Admin\RolesController::class, 'index']);
