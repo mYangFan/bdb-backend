@@ -14,6 +14,11 @@ use Illuminate\Support\Facades\Http;
 
 class LoginController extends Controller
 {
+    /**
+     * 游戏登录
+     * @param Request $request
+     * @return array
+     */
     public function index(Request $request)
     {
         $code = $request->input("code");

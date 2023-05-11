@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Http\Library\JWT;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 class Test extends Command
@@ -38,6 +39,6 @@ class Test extends Command
      */
     public function handle()
     {
-
+        dd(Carbon::parse()->addDays(5)->format("Y-m-d H:i:s"));
     }
 }

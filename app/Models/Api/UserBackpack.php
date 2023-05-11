@@ -20,7 +20,8 @@ class UserBackpack extends Model
             ->leftJoin("backpack_item as bpi", "ubp.item_id", "=", "bpi.id")
             ->where("ubp.user_id", $userId)
             ->select(["bpi.item_id", "ubp.item_num", "ubp.user_id", "ubp.state", "bpi.item_name"])
-            ->get();
+            ->get()
+            ->keyBy("item_id");
     }
 
     public static function updateItem($userId, $itemId, $count)

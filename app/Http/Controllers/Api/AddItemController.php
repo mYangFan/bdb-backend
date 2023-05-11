@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Api\Backpack;
 use App\Models\Api\UserBackpack;
 use Illuminate\Http\Request;
 
@@ -23,6 +24,6 @@ class AddItemController extends Controller
             ];
         }
 
-        return ["code" => 0, "msg" => "SUCCESS", "data" => null];
+        return ["code" => 0, "msg" => "SUCCESS", "data" => ["backpack" => convert2Camel(UserBackpack::getBackpackByUser($userId))]];
     }
 }

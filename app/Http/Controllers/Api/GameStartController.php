@@ -11,6 +11,11 @@ use Illuminate\Http\Request;
 
 class GameStartController extends Controller
 {
+    /**
+     * 开始游戏
+     * @param Request $request
+     * @return array
+     */
     public function index(Request $request)
     {
         $userId = $request->input("userId");

@@ -26,7 +26,7 @@ Route::middleware('jwt.api.auth')->group(function () {
     Route::post('startLevel', [\App\Http\Controllers\Api\GameStartController::class, 'index']);
     Route::post('endLevel', [\App\Http\Controllers\Api\GameOverController::class, 'index']);
     Route::post('addItem', [\App\Http\Controllers\Api\AddItemController::class, 'index']);
-    Route::post('getReward', [\App\Http\Controllers\Api\GetRewardController::class, 'index']);
+    Route::post('getReward', [\App\Http\Controllers\Api\RewardController::class, 'index']);
 });
 
 
