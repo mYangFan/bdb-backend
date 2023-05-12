@@ -5,8 +5,13 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Api\User;
 use App\Models\Api\UserReward;
+use BaconQrCode\Renderer\Image\ImagickImageBackEnd;
+use BaconQrCode\Renderer\ImageRenderer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use SimpleSoftwareIO\QrCode\Generator;
+use SimpleSoftwareIO\QrCode\Image;
 
 class RewardController extends Controller
 {
@@ -49,6 +54,27 @@ class RewardController extends Controller
         $userId = $request->input("userId");
         $rewardId = $request->input("rewardId");
 
-        $userReward = UserReward::query();
+        $userReward = UserReward::query()
+            ->where("id", $rewardId)
+            ->first();
+
+        $now = Carbon::now()->format('Y-m-d H:i:s');
+        if ($userReward->expired < $now) {
+            return ['code' => 1, 'msg' => '奖券已过期', 'data' => null];
+        }
+
+        if ($userReward->state != 1) {
+            return ['code' => 1, 'msg' => '奖券状态异常', 'data' => null];
+        }
+
+        $url = 'https://example.com';
+        $qrCode = QrCode::size(500)->generate($url);
+        $text = 'Text below the QR code';
+
+        return [
+            'qrCode' => base64_encode($qrCode),
+            'text' => $text,
+        ];
+
     }
 }
