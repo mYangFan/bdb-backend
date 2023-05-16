@@ -63,6 +63,6 @@ class AdminUser extends Model
 
     public function roles()
     {
-
+        return $this->hasOne(AdminRole::class, 'user_id', 'id');
     }
 }

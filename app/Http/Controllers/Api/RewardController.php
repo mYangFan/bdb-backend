@@ -3,39 +3,46 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Api\Reward;
 use App\Models\Api\User;
 use App\Models\Api\UserReward;
-use BaconQrCode\Renderer\Image\ImagickImageBackEnd;
-use BaconQrCode\Renderer\ImageRenderer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
-use SimpleSoftwareIO\QrCode\Generator;
-use SimpleSoftwareIO\QrCode\Image;
 
 class RewardController extends Controller
 {
     //todo 奖品列表
-    public function index()
+    public function index(Request $request)
     {
+        $userId = $request->input("userId");
 
+        return ['code' => 0, 'msg' => 'SUCCESS', 'data' => convert2Camel(UserReward::getRewardsByUser($userId))];
     }
 
     public function getReward(Request $request)
     {
         $userId = $request->input("userId");
+        $rewardType = $request->input("rewardType");
+        $location = $request->input("location");
+
+        $location = explode("|", $location);
+        $province = data_get($location, 0);
+        $city = data_get($location, 1);
+        $district = data_get($location, 2);
         $user = User::query()->where("id", $userId)->first();
 
         if (!$user) {
             return ['code' => 401, 'msg' => '请先完成登录授权操作', 'data' => null];
         }
 
+        $nowDate = Carbon::now()->format("Ymd");
         $rewards = UserReward::getRewardsByUser($userId);
         if (count($rewards)) {
-            $lastRewardDate = $rewards[0]->updated_at; //最近一次领奖时间
-            $gapRewardDate = Carbon::parse($lastRewardDate)->addDay()->format("Y-m-d H:i:s");
-            $rewardYearDate = Carbon::parse($lastRewardDate)->addDays(365)->format("Y-m-d H:i:s");
-            $nowDate = Carbon::now()->format("Y-m-d H:i:s");
+            $lastRewardDate = $rewards[0]->received_at; //最近一次领奖时间
+            $gapRewardDate = Carbon::parse($lastRewardDate)->addDay()->format("Ymd");
+            $rewardYearDate = Carbon::parse($lastRewardDate)->addDays(365)->format("Y-m-d");
+
 
             //24小时内只能领一次
             if ($nowDate < $gapRewardDate) {
@@ -47,6 +54,20 @@ class RewardController extends Controller
                 return ['code' => -10024, 'msg' => '您一年内领取奖励次数已达上限', 'data' => null];
             }
         }
+        $expired = Carbon::parse()->addDays(5)->format("Ymd");
+        $reward = Reward::query()->where('reward_type', $rewardType)->first();
+
+        if (empty($reward)) {
+            return ['code' => 1, 'msg' => '没有此奖品', 'data' => null];
+        }
+
+        $result = UserReward::query()->insert(['reward_id' => $reward->id, "user_id" => $userId, "r_province" => $province, "r_city" => $city, "r_district" => $district, "expired" => $expired, "received_at" => $nowDate]);
+
+        if (!$result) {
+            return ['code' => 1, 'msg' => '领取失败', 'data' => null];
+        }
+
+        return ['code' => 0, 'msg' => 'SUCCESS', 'data' => null];
     }
 
     public function fulReward(Request $request)
@@ -67,14 +88,6 @@ class RewardController extends Controller
             return ['code' => 1, 'msg' => '奖券状态异常', 'data' => null];
         }
 
-        $url = 'https://example.com';
-        $qrCode = QrCode::size(500)->generate($url);
-        $text = 'Text below the QR code';
-
-        return [
-            'qrCode' => base64_encode($qrCode),
-            'text' => $text,
-        ];
 
     }
 }

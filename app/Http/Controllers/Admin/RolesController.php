@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Admin\AdminRole;
 use App\Models\Admin\AdminRoleMenu;
 use App\Models\Admin\AdminRoleUser;
+use App\Models\Admin\AdminUser;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -14,9 +15,7 @@ class RolesController extends Controller
 {
     public function index(Request $request)
     {
-        $roles = AdminRole::getRoles($request);
-
-        return ['code' => 1, 'msg' => 'SUCCESS', 'data' => convert2Camel($roles)];
+        return AdminRole::getRoles($request);
     }
 
     public function addRole(Request $request)

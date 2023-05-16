@@ -19,7 +19,7 @@ class UserReward extends Model
         return DB::table("user_reward as urd")
             ->leftJoin("reward as rd", "urd.reward_id", "=", "rd.id")
             ->where("urd.user_id", $userId)
-            ->select(["rd.reward_name", "rd.reward_type", "rd.reward_state", "rd.reward_life_time", "urd.qrcode_uri", "urd.updated_at"])
+            ->select(["rd.reward_name", "rd.reward_type", "rd.reward_state", "urd.expired", "urd.qrcode_uri", "urd.received_at"])
             ->orderBy("urd.id", "desc")
             ->get();
     }
