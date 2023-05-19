@@ -7,12 +7,14 @@ use App\Models\Api\Reward;
 use App\Models\Api\User;
 use App\Models\Api\UserReward;
 use Carbon\Carbon;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class RewardController extends Controller
 {
-    //todo 奖品列表
     public function index(Request $request)
     {
         $userId = $request->input("userId");
@@ -25,11 +27,13 @@ class RewardController extends Controller
         $userId = $request->input("userId");
         $rewardType = $request->input("rewardType");
         $location = $request->input("location");
+        $shop = $request->input("shop");
 
         $location = explode("|", $location);
         $province = data_get($location, 0);
         $city = data_get($location, 1);
         $district = data_get($location, 2);
+
         $user = User::query()->where("id", $userId)->first();
 
         if (!$user) {
@@ -60,11 +64,35 @@ class RewardController extends Controller
         if (empty($reward)) {
             return ['code' => 1, 'msg' => '没有此奖品', 'data' => null];
         }
+//        $rewardAreas = DB::table("reward_area")->where("province", $province)->where("city", $city)->where("district", $district)->first();
+//        if (empty($rewardAreas)) {
+//            return ['code' => 1, 'msg' => '抱歉，你所在区域暂不参加活动', 'data' => null];
+//        }
 
-        $result = UserReward::query()->insert(['reward_id' => $reward->id, "user_id" => $userId, "r_province" => $province, "r_city" => $city, "r_district" => $district, "expired" => $expired, "received_at" => $nowDate]);
 
-        if (!$result) {
-            return ['code' => 1, 'msg' => '领取失败', 'data' => null];
+        try {
+            $code = strtoupper(Str::random(12));
+            $h5Uri = env("H5URI");
+            $queryParams = http_build_query([
+                'code' => $code,
+                'userId' => $userId,
+                'nickname' => $user->nick_name,
+                'received_at' => $nowDate,
+                'expired' => $expired,
+                'location' => $location,
+                "shop" => $shop,
+            ]);
+            $qrcodeUri = $h5Uri . "?" . $queryParams;
+            $result = UserReward::query()->insert(['reward_id' => $reward->id, "user_id" => $userId, "r_province" => $province, "r_city" => $city, "r_district" => $district, "expired" => $expired, "received_at" => $nowDate, "code" => $code, "qrcode_uri" => $$qrcodeUri]);
+            if (!$result) {
+                return ['code' => 1, 'msg' => '领取失败', 'data' => null];
+            }
+        } catch (QueryException $e) {
+            if ($e->getCode() == '23000') {
+                return ['code' => 1, 'msg' => '奖品领取失败，请检查网络状况或稍后再试', 'data' => null];
+            } else {
+                return ['code' => 1, 'msg' => '领取失败', 'data' => null];
+            }
         }
 
         return ['code' => 0, 'msg' => 'SUCCESS', 'data' => null];

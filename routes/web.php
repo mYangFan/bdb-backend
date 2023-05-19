@@ -34,4 +34,7 @@ Route::middleware('jwt.auth')->group(function () {
     Route::delete('deleteRole/{id}', [\App\Http\Controllers\Admin\RolesController::class, 'deleteRole']);
 
     Route::get('menuTree', [\App\Http\Controllers\Admin\MenusController::class, 'menuTree']);
+
+    Route::post('setRewardArea', [\App\Http\Controllers\Admin\RewardsController::class, 'setRewardArea']);
+    Route::get('rewardAreas', [\App\Http\Controllers\Admin\RewardsController::class, 'getRewardAreas']);
 });

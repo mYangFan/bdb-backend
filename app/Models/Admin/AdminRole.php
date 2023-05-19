@@ -37,7 +37,7 @@ class AdminRole extends Model
             return array_merge($item->toArray(), ['menus' => data_get($menuData, "{$item["id"]}")]);
         })->all();
 
-        return ['code' => 1, 'msg' => 'SUCCESS', 'data' => convert2Camel($res)];
+        return ['code' => 1, 'msg' => 'SUCCESS', 'data' => ['total' => $total, 'data' => convert2Camel($res)]];
     }
 
     public function menus()

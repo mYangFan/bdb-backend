@@ -47,7 +47,6 @@ class UserReward extends Model
         }
 
         $expireTime = Carbon::parse()->addDays(5)->format("Y-m-d H:i:s");
-        $now = Carbon::
 
         $result = self::query()->insert(['user_id' => $userId, "reward_id" => $reward->id, "expired" => $expireTime]);
 
