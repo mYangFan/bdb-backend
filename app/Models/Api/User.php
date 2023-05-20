@@ -36,11 +36,11 @@ class User extends Model
     public static function createUser($openId, $nickName, $avatar, $location)
     {
         return DB::table("user")->insert([
-            "open_id" => $openId,
+            "open_id"   => $openId,
             "nick_name" => $nickName,
-            "avatar" => $avatar,
-            "guide" => 0,
-            "location" => $location,
+            "avatar"    => $avatar,
+            "guide"     => 0,
+            "location"  => $location,
         ]);
     }
 
@@ -61,7 +61,7 @@ class User extends Model
             return ['code' => 1, 'msg' => '用户不存在', 'data' => null];
         }
 
-        $result = $user->update(['nick_name' => $nickname, 'avatar' => $avatar, 'location' => $location]);
+        $result = $user->update(['nick_name' => $nickname, 'avatar_uri' => $avatar, 'location' => $location]);
 
         if ($result) {
             return ['code' => 1, 'mag' => 'SUCCESS', 'data' => null];

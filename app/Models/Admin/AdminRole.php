@@ -14,9 +14,11 @@ class AdminRole extends Model
     {
         $page = $request->input('page', 0);
         $pageSize = $request->input('pageSize', 10);
+        $search = $request->input("search");
 
         $model = self::query();
 
+        $result = [];
         if (empty($page)) {
             return $model->get();
         }

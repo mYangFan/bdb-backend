@@ -31,19 +31,19 @@ class GameStartController extends Controller
 
         $returnData = [
             'backpack' => $backpack,
-            'reward' => $rewards,
-            'battle' => [
+            'reward'   => $rewards,
+            'battle'   => [
                 'lastMaxLevel' => $user->max_level,
                 'currentLevel' => $level,
-                'canGetGift' => 1
+                'canGetGift'   => 1
             ]
         ];
 
         if (count($rewards) > 0) {
-            $lastRewardDate = $rewards[0]->updated_at; //最近一次领奖时间
-            $gapRewardDate = Carbon::parse($lastRewardDate)->addDay()->format("Y-m-d H:i:s");
-            $rewardYearDate = Carbon::parse($lastRewardDate)->addDays(365)->format("Y-m-d H:i:s");
-            $nowDate = Carbon::now()->format("Y-m-d H:i:s");
+            $lastRewardDate = $rewards[0]->received_at; //最近一次领奖时间
+            $gapRewardDate = Carbon::parse($lastRewardDate)->addDay()->format("Y-m-d");
+            $rewardYearDate = Carbon::parse($lastRewardDate)->addDays(365)->format("Y-m-d");
+            $nowDate = Carbon::now()->format("Y-m-d");
 
             //24小时内只能领一次
             if ($nowDate < $gapRewardDate) {

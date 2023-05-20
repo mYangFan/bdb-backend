@@ -11,6 +11,8 @@ class MenusController extends Controller
     public function menuTree(Request $request)
     {
         $roleId = $request->input("roleId");
-        dd(AdminMenu::getMenuTree($roleId));
+        $data = AdminMenu::getMenuTree($roleId);
+
+        return ['code' => 1, 'msg' => 'SUCCESS', 'data' => convert2Camel($data)];
     }
 }
