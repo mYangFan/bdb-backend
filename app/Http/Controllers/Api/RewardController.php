@@ -9,9 +9,7 @@ use App\Models\Api\UserReward;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class RewardController extends Controller
 {
@@ -66,24 +64,23 @@ class RewardController extends Controller
         }
 //        $rewardAreas = DB::table("reward_area")->where("province", $province)->where("city", $city)->where("district", $district)->first();
 //        if (empty($rewardAreas)) {
-//            return ['code' => 1, 'msg' => '抱歉，你所在区域暂不参加活动', 'data' => null];
+//            return ['code' => 1, 'msg' => '抱歉，你所在区域暂不参加此活动', 'data' => null];
 //        }
-
 
         try {
             $code = strtoupper(Str::random(12));
             $h5Uri = env("H5URI");
             $queryParams = http_build_query([
-                'code' => $code,
-                'userId' => $userId,
-                'nickname' => $user->nick_name,
+                'code'        => $code,
+                'nickname'    => $user->nick_name,
                 'received_at' => $nowDate,
-                'expired' => $expired,
-                'location' => $location,
-                "shop" => $shop,
+                'expired'     => $expired,
+                'location'    => $location,
+                "shop"        => $shop,
             ]);
             $qrcodeUri = $h5Uri . "?" . $queryParams;
-            $result = UserReward::query()->insert(['reward_id' => $reward->id, "user_id" => $userId, "r_province" => $province, "r_city" => $city, "r_district" => $district, "expired" => $expired, "received_at" => $nowDate, "code" => $code, "qrcode_uri" => $$qrcodeUri]);
+
+            $result = UserReward::query()->insert(['reward_id' => $reward->id, "user_id" => $userId, "r_province" => $province, "r_city" => $city, "r_district" => $district, "expired" => $expired, "received_at" => $nowDate, "code" => $code, "qrcode_uri" => $qrcodeUri]);
             if (!$result) {
                 return ['code' => 1, 'msg' => '领取失败', 'data' => null];
             }
@@ -96,26 +93,5 @@ class RewardController extends Controller
         }
 
         return ['code' => 0, 'msg' => 'SUCCESS', 'data' => null];
-    }
-
-    public function fulReward(Request $request)
-    {
-        $userId = $request->input("userId");
-        $rewardId = $request->input("rewardId");
-
-        $userReward = UserReward::query()
-            ->where("id", $rewardId)
-            ->first();
-
-        $now = Carbon::now()->format('Y-m-d H:i:s');
-        if ($userReward->expired < $now) {
-            return ['code' => 1, 'msg' => '奖券已过期', 'data' => null];
-        }
-
-        if ($userReward->state != 1) {
-            return ['code' => 1, 'msg' => '奖券状态异常', 'data' => null];
-        }
-
-
     }
 }

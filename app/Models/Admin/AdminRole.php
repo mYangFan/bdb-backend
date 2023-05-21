@@ -16,11 +16,12 @@ class AdminRole extends Model
         $pageSize = $request->input('pageSize', 10);
         $search = $request->input("search");
 
-        $model = self::query();
+        $model = self::query()->when($search, function ($query) use ($search) {
+            $query->where("name", 'like', '%' . $search . '%');
+        });
 
-        $result = [];
         if (empty($page)) {
-            return $model->get();
+            return ['code' => 1, 'msg' => 'SUCCESS', 'data' => $model->get()];
         }
 
         $cloneModel = clone $model;

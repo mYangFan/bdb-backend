@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin\AdminUser;
+use App\Models\Api\UserReward;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -44,6 +47,32 @@ class RewardsController extends Controller
 
     public function fulReward(Request $request)
     {
+        $code = $request->input("code");
+        $username = $request->input("username");
+        $password = $request->input("password");
 
+        if (empty($code)) {
+            return ['code' => 0, 'msg' => '无效奖券，请核对信息后再进行核销操作', 'data' => null];
+        }
+
+        $userReward = UserReward::query()->where("code", $code)->first();
+        if (empty($userReward) || $userReward->state != 1) {
+            return ['code' => 0, 'msg' => '无效奖券，请核对信息后再进行核销操作', 'data' => null];
+        }
+
+        $user = AdminUser::query()->where("username", $username)->where("password", md5($password))->first();
+        if (empty($user)) {
+            return ['code' => 0, 'msg' => '用户名或密码错误', 'data' => null];
+        }
+
+        $nowDate = Carbon::now()->format('Ymd');
+        $now = Carbon::now()->format('Y-n-d H:i:s');
+
+        $result = $userReward->update(['state' => 2, 'ful_at' => $nowDate, 'updated_at' => $now]);
+        if (!$result) {
+            return ['code' => 0, 'msg' => '核销失败，请稍后重试', 'data' => null];
+        }
+
+        return ['code' => 1, 'msg' => 'SUCCESS', 'data' => null];
     }
 }
