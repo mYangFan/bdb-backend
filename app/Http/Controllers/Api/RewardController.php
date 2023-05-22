@@ -73,7 +73,8 @@ class RewardController extends Controller
             $queryParams = http_build_query([
                 'code'        => $code,
                 'nickname'    => $user->nick_name,
-                'received_at' => $nowDate,
+                'reward'      => $reward->reward_name,
+                'receivedAt' => $nowDate,
                 'expired'     => $expired,
                 'location'    => $location,
                 "shop"        => $shop,

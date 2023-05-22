@@ -50,14 +50,25 @@ class RewardsController extends Controller
         $code = $request->input("code");
         $username = $request->input("username");
         $password = $request->input("password");
+        $location = $request->input("location");
+        $locationArr = explode("|", $location);
+
+        $shop = $request->input("shop");
 
         if (empty($code)) {
             return ['code' => 0, 'msg' => '无效奖券，请核对信息后再进行核销操作', 'data' => null];
         }
 
+        $nowDate = Carbon::now()->format('Ymd');
+        $now = Carbon::now()->format('Y-n-d H:i:s');
+
         $userReward = UserReward::query()->where("code", $code)->first();
         if (empty($userReward) || $userReward->state != 1) {
             return ['code' => 0, 'msg' => '无效奖券，请核对信息后再进行核销操作', 'data' => null];
+        }
+
+        if ($userReward->expired < $nowDate) {
+            return ['code' => 0, 'msg' => '奖券已过期', 'data' => null];
         }
 
         $user = AdminUser::query()->where("username", $username)->where("password", md5($password))->first();
@@ -65,10 +76,7 @@ class RewardsController extends Controller
             return ['code' => 0, 'msg' => '用户名或密码错误', 'data' => null];
         }
 
-        $nowDate = Carbon::now()->format('Ymd');
-        $now = Carbon::now()->format('Y-n-d H:i:s');
-
-        $result = $userReward->update(['state' => 2, 'ful_at' => $nowDate, 'updated_at' => $now]);
+        $result = $userReward->update(['state' => 2, 'ful_at' => $nowDate, 'f_province' => data_get($locationArr, '0'), 'f_city' => data_get($locationArr, '1'), 'f_district' => data_get($locationArr, '2'), 'f_shop' => $shop, 'updated_at' => $now]);
         if (!$result) {
             return ['code' => 0, 'msg' => '核销失败，请稍后重试', 'data' => null];
         }
