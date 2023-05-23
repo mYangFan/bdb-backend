@@ -21,23 +21,30 @@ class RolesController extends Controller
     public function addRole(Request $request)
     {
         $name = $request->input("name");
-        $menuIds = $request->input("menus");
+//        $menuIds = $request->input("menus");
 
 
         $now = Carbon::now()->format('Y-m-d H:i:s');
-        $role = new AdminRole();
-        $role->name = $name;
-        $role->created_at = $now;
-        $role->updated_at = $now;
-
-        $role->save();
-
-        $roleMenus = [];
-        foreach ($menuIds as $menuId) {
-            $roleMenus[] = ["role_id" => $role->id, "menu_id" => $menuId, 'created_at' => $now, 'updated_at' => $now];
+        $roleModel = AdminRole::query()->where('name', $name)->first();
+        if (!empty($roleModel)) {
+            return ['code' => 0, 'msg' => '角色名不能重复', 'data' => null];
         }
 
-        AdminRoleMenu::query()->insert($roleMenus);
+        $roleModel = new AdminRole();
+        $roleModel->name = $name;
+        $roleModel->created_at = $now;
+        $roleModel->updated_at = $now;
+
+        if (!$roleModel->save()) {
+            return ['code' => 0, "msg" => "新增角色失败，请稍后再试", 'data' => null];
+        }
+
+//        $roleMenus = [];
+//        foreach ($menuIds as $menuId) {
+//            $roleMenus[] = ["role_id" => $role->id, "menu_id" => $menuId, 'created_at' => $now, 'updated_at' => $now];
+//        }
+//
+//        AdminRoleMenu::query()->insert($roleMenus);
 
         return ['code' => 1, 'msg' => 'SUCCESS', 'data' => null];
     }
@@ -45,13 +52,13 @@ class RolesController extends Controller
     public function deleteRole($id)
     {
         $role = AdminRole::query()->where("id", $id)->first();
-        if ($id->name == "超级管理员") {
-            return ['code' => 0, 'msg' => '超级管理员禁止删除', 'data' => null];
+        if ($role->name == "超级管理员") {
+            return ['code' => 0, 'msg' => '禁止删除角色<超级管理员>', 'data' => null];
         }
 
         $roleUser = AdminRoleUser::query()->where(['role_id' => $id])->first();
         if (!empty($roleUser)) {
-            return ['code' => 0, 'msg' => '该角色已存在用户，请先解除所有与改角色的用户绑定关系', 'data' => null];
+            return ['code' => 0, 'msg' => '该角色下已存在用户，请先解除所有与改角色的用户绑定关系,再进行删除操作', 'data' => null];
         }
 
         try {
@@ -92,6 +99,27 @@ class RolesController extends Controller
             DB::rollBack();
             Log::error("角色授权失败： " . $e->getMessage());
             return ['code' => 0, 'msg' => $e->getMessage(), 'data' => null];
+        }
+
+        return ['code' => 1, 'msg' => 'SUCCESS', 'data' => null];
+    }
+
+    public function updateRole(Request $request, $id)
+    {
+        $name = $request->input("name");
+
+        $role = AdminRole::query()->where("id", $id)->first();
+        if (empty($role)) {
+            return ['code' => 0, 'msg' => '角色不存在，修改失败', 'data' => null];
+        }
+
+        if ($role->name == "超级管理员") {
+            return ['code' => 0, 'msg' => "禁止修改角色<超级管理员>", 'data' => null];
+        }
+
+        $role->name = $name;
+        if (!$role->save()) {
+            return ['code' => 0, 'msg' => '修改失败', 'data' => null];
         }
 
         return ['code' => 1, 'msg' => 'SUCCESS', 'data' => null];

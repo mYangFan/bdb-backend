@@ -31,8 +31,9 @@ Route::middleware('jwt.auth')->group(function () {
 
     Route::get('roles', [\App\Http\Controllers\Admin\RolesController::class, 'index']);
     Route::post('addRole', [\App\Http\Controllers\Admin\RolesController::class, 'addRole']);
-    Route::delete('deleteRole/{id}', [\App\Http\Controllers\Admin\RolesController::class, 'deleteRole']);
+    Route::post('deleteRole/{id}', [\App\Http\Controllers\Admin\RolesController::class, 'deleteRole']);
     Route::post("authRole/{id}", [\App\Http\Controllers\Admin\RolesController::class, 'authRole']);
+    Route::post("updateRole/{id}", [\App\Http\Controllers\Admin\RolesController::class, 'updateRole']);
 
     Route::get('menuTree', [\App\Http\Controllers\Admin\MenusController::class, 'menuTree']);
 

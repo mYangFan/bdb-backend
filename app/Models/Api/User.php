@@ -67,4 +67,17 @@ class User extends Model
             return ['code' => 1, 'mag' => 'SUCCESS', 'data' => null];
         }
     }
+
+    public function userList(Request $request)
+    {
+        $search = $request->input("search");
+        $state = $request->input("state");
+        DB::table("user as u")->leftJoin("user_reward as ur", "u.id", "=", "ur.user_id")
+            ->leftJoin("reward as r", "ur.reward_id", "=", "r.id")
+            ->when($search, function ($query) use ($search) {
+                $query->where("u.name", 'like', '%' . $search . '%');
+            })
+            ->when($state, function ($query) use ($state){
+            });
+    }
 }

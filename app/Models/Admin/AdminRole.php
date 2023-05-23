@@ -10,6 +10,8 @@ class AdminRole extends Model
 {
     use HasFactory;
 
+    protected $guarded = [];
+
     public static function getRoles($request)
     {
         $page = $request->input('page', 0);
