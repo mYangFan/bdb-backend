@@ -27,6 +27,8 @@ class User extends Model
         //是否是新用户
         $guide = self::getUserByOpenId($openId);
         if (!empty($guide)) {
+//            $now = Carbon::now()->format("Y-m-d H:i:s");
+//            $guide->update(['last_login_at' => $now]);
             return $guide;
         } else {
             return self::query()->create(['open_id' => $openId]);
@@ -68,16 +70,4 @@ class User extends Model
         }
     }
 
-    public function userList(Request $request)
-    {
-        $search = $request->input("search");
-        $state = $request->input("state");
-        DB::table("user as u")->leftJoin("user_reward as ur", "u.id", "=", "ur.user_id")
-            ->leftJoin("reward as r", "ur.reward_id", "=", "r.id")
-            ->when($search, function ($query) use ($search) {
-                $query->where("u.name", 'like', '%' . $search . '%');
-            })
-            ->when($state, function ($query) use ($state){
-            });
-    }
 }

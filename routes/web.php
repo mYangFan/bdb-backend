@@ -39,6 +39,14 @@ Route::middleware('jwt.auth')->group(function () {
 
     Route::post('setRewardArea', [\App\Http\Controllers\Admin\RewardsController::class, 'setRewardArea']);
     Route::get('rewardAreas', [\App\Http\Controllers\Admin\RewardsController::class, 'getRewardAreas']);
+    Route::post('updateRewardArea/{id}', [\App\Http\Controllers\Admin\RewardsController::class, 'updateRewardArea']);
+    Route::post("deleteRewardArea/{id}", [\App\Http\Controllers\Admin\RewardsController::class, 'deleteRewardArea']);
+
+    Route::get('customers', [\App\Http\Controllers\Admin\CustomerController::class, 'index']);
+
+    Route::get('statReward', [\App\Http\Controllers\Admin\RewardsController::class, 'statReward']);
+
+    Route::post("verifyReward", [\App\Http\Controllers\Admin\RewardsController::class, 'fulReward']);
 });
 
 Route::post('fulReward', [\App\Http\Controllers\Admin\RewardsController::class, 'fulReward']);

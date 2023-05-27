@@ -27,10 +27,10 @@ class RewardController extends Controller
         $location = $request->input("location");
         $shop = $request->input("shop");
 
-        $location = explode("|", $location);
-        $province = data_get($location, 0);
-        $city = data_get($location, 1);
-        $district = data_get($location, 2);
+        $locationArr = explode("|", $location);
+        $province = data_get($locationArr, 0);
+        $city = data_get($locationArr, 1);
+        $district = data_get($locationArr, 2);
 
         $user = User::query()->where("id", $userId)->first();
 
@@ -62,26 +62,26 @@ class RewardController extends Controller
         if (empty($reward)) {
             return ['code' => 1, 'msg' => '没有此奖品', 'data' => null];
         }
-//        $rewardAreas = DB::table("reward_area")->where("province", $province)->where("city", $city)->where("district", $district)->first();
-//        if (empty($rewardAreas)) {
-//            return ['code' => 1, 'msg' => '抱歉，你所在区域暂不参加此活动', 'data' => null];
-//        }
+        $rewardAreas = DB::table("reward_area")->where("province", $province)->where("city", $city)->where("district", $district)->first();
+        if (empty($rewardAreas)) {
+            return ['code' => 1, 'msg' => '抱歉，你所在区域暂不参加此活动', 'data' => null];
+        }
 
         try {
             $code = strtoupper(Str::random(12));
             $h5Uri = env("H5URI");
             $queryParams = http_build_query([
-                'code'        => $code,
-                'nickname'    => $user->nick_name,
-                'reward'      => $reward->reward_name,
+                'code'       => $code,
+                'nickname'   => $user->nick_name,
+                'reward'     => $reward->reward_name,
                 'receivedAt' => $nowDate,
-                'expired'     => $expired,
-                'location'    => $location,
-                "shop"        => $shop,
+                'expired'    => $expired,
+                'location'   => $location,
+                "shop"       => $shop,
             ]);
-            $qrcodeUri = $h5Uri . "?" . $queryParams;
+            $qrcodeUri = $h5Uri . "/#/home?" . $queryParams;
 
-            $result = UserReward::query()->insert(['reward_id' => $reward->id, "user_id" => $userId, "r_province" => $province, "r_city" => $city, "r_district" => $district, "expired" => $expired, "received_at" => $nowDate, "code" => $code, "qrcode_uri" => $qrcodeUri]);
+            $result = UserReward::query()->insert(['reward_id' => $reward->id, "user_id" => $userId, "r_province" => $province, "r_city" => $city, "r_district" => $district, "r_location" => $location, "expired" => $expired, "received_at" => $nowDate, "code" => $code, "qrcode_uri" => $qrcodeUri]);
             if (!$result) {
                 return ['code' => 1, 'msg' => '领取失败', 'data' => null];
             }

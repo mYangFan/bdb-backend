@@ -29,6 +29,7 @@ Route::middleware('jwt.api.auth')->group(function () {
     Route::post('rewards', [\App\Http\Controllers\Api\RewardController::class, 'index']);
     Route::post("getReward", [\App\Http\Controllers\Api\RewardController::class, 'getReward']);
     Route::post('fulReward', [\App\Http\Controllers\Api\RewardController::class, 'fulReward']);
+    Route::get("qrcode", [\App\Http\Controllers\Api\RewardController::class, 'qrCode']);
 });
 
 

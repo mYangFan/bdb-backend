@@ -16,10 +16,11 @@ class UserReward extends Model
 
     public static function getRewardsByUser($userId)
     {
+        $now = Carbon::now()->format("Ymd");
         return DB::table("user_reward as urd")
             ->leftJoin("reward as rd", "urd.reward_id", "=", "rd.id")
             ->where("urd.user_id", $userId)
-            ->select(["rd.reward_name", "rd.reward_type", "rd.reward_state", "urd.expired", "urd.qrcode_uri", "urd.received_at"])
+            ->select(["rd.reward_name", "rd.reward_type", "rd.reward_state", "urd.code", "urd.expired", "urd.qrcode_uri", "urd.received_at", DB::raw("CASE WHEN {$now} > expired THEN 3 ELSE urd.state END AS reward_state")])
             ->orderBy("urd.id", "desc")
             ->get();
     }

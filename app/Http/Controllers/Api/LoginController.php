@@ -41,8 +41,6 @@ class LoginController extends Controller
         } catch (\Exception $e) {
             Log::info("get openId error: " . $e->getMessage());
         }
-
-
         $body = json_decode($response->getBody());
 
         $openId = data_get($body, "openid");
@@ -50,6 +48,7 @@ class LoginController extends Controller
         if (empty($openId)) {
             return ['code' => 1, 'msg' => '登录失败', 'data' => null];
         }
+
 
         $user = User::findOrCreateUser($request, $openId);
         $backpack = UserBackpack::getBackpackByUser($user->id);
@@ -64,6 +63,9 @@ class LoginController extends Controller
             "token"      => JwtAuth::createJwt($user->id, $user->nick_name),
             "reward"     => $rewards,
             "serverTime" => date("Y-m-d H:i:s", time())];
+
+
+        Log::error(json_encode($userData, true));
 
         return [
             "code" => 0,
