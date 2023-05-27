@@ -126,6 +126,16 @@ class UsersController
 
     public function deleteUser(Request $request, $id)
     {
+        $isAdmin = DB::table("admin_role_users as aru")
+            ->leftJoin("admin_roles as ar", "aru.role_id", "=", "ar.id")
+            ->where("aru.user_id", $id)
+            ->where("ar.name", "超级管理员")
+            ->exists();
+
+        if ($isAdmin) {
+            return ['code' => 0, 'msg' => '超级管理员禁止删除', 'data' => null];
+        }
+
         $result = AdminUser::deleteUser($id);
 
         if (!$result) {

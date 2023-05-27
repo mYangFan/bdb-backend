@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Api\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -15,14 +14,17 @@ class CustomerController extends Controller
         $page = $request->input("page");
         $pageSize = $request->input("pageSize");
         $state = $request->input("state");
-        $search = $request->input("research");
+        $search = $request->input("search");
         $code = $request->input("code");
 
-        $users = User::query()
+        $users = DB::table("user as u")
+            ->leftJoin("user_reward as ur", "u.id", "=", "ur.user_id")
             ->when($search, function ($query) use ($search) {
-                $query->where("nick_name", "like", "%" . $search . "%");
+                $query->where("u.nick_name", "like", "%" . $search . "%");
             })->when($state, function ($query) use ($state) {
-                $query->where("state", $state);
+                $query->where("u.state", $state);
+            })->when($code, function ($query) use ($code) {
+                $query->where("ur.code", $code);
             });
 
         $cloneUsers = clone $users;
@@ -44,13 +46,13 @@ class CustomerController extends Controller
             ->get()
             ->groupBy("user_id");
 
-        $res = $users->map(function ($item) use ($userRewardData) {
-            return array_merge($item->toArray(), ['reward' => data_get($userRewardData, "{$item["id"]}")]);
-        })->all();
+        foreach ($users as $user) {
+            $user->reward = data_get($userRewardData, "{$user->id}");
+        }
 
         return ['code' => 1, 'msg' => 'SUCCESS', 'data' => [
             'total' => $total,
-            'data'  => convert2Camel($res)
+            'data'  => convert2Camel($users)
         ]];
 
     }

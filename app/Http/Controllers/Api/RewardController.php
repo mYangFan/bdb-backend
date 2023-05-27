@@ -62,7 +62,7 @@ class RewardController extends Controller
         if (empty($reward)) {
             return ['code' => 1, 'msg' => '没有此奖品', 'data' => null];
         }
-        $rewardAreas = DB::table("reward_area")->where("province", $province)->where("city", $city)->where("district", $district)->first();
+        $rewardAreas = DB::table("reward_area")->where("province", $province)->where("city", $city)->where("district", $district)->where('state', 1)->first();
         if (empty($rewardAreas)) {
             return ['code' => 1, 'msg' => '抱歉，你所在区域暂不参加此活动', 'data' => null];
         }

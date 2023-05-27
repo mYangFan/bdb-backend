@@ -3,9 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Http\Library\JWT;
-use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Illuminate\Support\Str;
 
 class Test extends Command
 {
@@ -40,6 +38,5 @@ class Test extends Command
      */
     public function handle()
     {
-        dd(Str::random(10));
     }
 }
