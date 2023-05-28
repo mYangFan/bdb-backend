@@ -19,16 +19,16 @@ class VerifyApiJwt
      */
     public function handle(Request $request, Closure $next)
     {
-//        $token = $request->input("token", "");
-//
-//        Log::info("token: " . $token);
-//        $authData = JwtAuth::verifyJwt($token);
-//
-//        if (empty($authData)) {
-//            return Response::json(['code' => -404, 'msg' => 'token is invalid', 'data' => null]);
-//        }
-//
-//        $request->merge(["userId" => $authData]);
+        $token = $request->input("token", "");
+
+        Log::info("token: " . $token);
+        $authData = JwtAuth::verifyJwt($token);
+
+        if (empty($authData)) {
+            return Response::json(['code' => -404, 'msg' => 'token is invalid', 'data' => null]);
+        }
+
+        $request->merge(["userId" => $authData]);
         return $next($request);
     }
 }
